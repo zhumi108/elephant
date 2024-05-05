@@ -1,9 +1,11 @@
 package com.tt.elephant.controller;
 
+import com.tt.elephant.jwt.JwtToken;
 import com.tt.elephant.model.ArticleDto;
 import com.tt.elephant.model.ResponseInfo;
 import com.tt.elephant.repository.ArticleEntity;
 import com.tt.elephant.repository.ArticleRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
+@Tag(name = "文章管理接口", description = "文章管理")
+@RequestMapping("/api/v1")
 @RestController
 public class ArticleController {
     @Autowired
@@ -22,11 +26,12 @@ public class ArticleController {
      * @param author
      * @return
      */
+    @JwtToken
     @GetMapping("/article/list")
     public @ResponseBody ResponseInfo ArticleList(@RequestParam("author") String author, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize){
         ResponseInfo responseInfo = new ResponseInfo();
 
-        Pageable pageable = PageRequest.of(pageNumber,pageSize);
+        Pageable pageable = PageRequest.of(pageNumber-1,pageSize);
 
         Page<ArticleEntity> articleEntityList = articleResposity.findByAuthorContaining(author,pageable);
         responseInfo.setCode("true");
@@ -40,6 +45,7 @@ public class ArticleController {
      * @param id
      * @return
      */
+    @JwtToken
     @GetMapping("/article/detail")
     public @ResponseBody ResponseInfo ArticleDetail(@RequestParam("articleId")String id) {
 
@@ -59,6 +65,7 @@ public class ArticleController {
      * @param articleDto
      * @return
      */
+    @JwtToken
     @PostMapping("/article/changeType")
     public @ResponseBody ResponseInfo updateArticle(@RequestBody ArticleDto articleDto) {
         ResponseInfo responseInfo = new ResponseInfo();
@@ -75,6 +82,7 @@ public class ArticleController {
      * @param articleDto
      * @return
      */
+    @JwtToken
     @PostMapping("/new/article")
     public @ResponseBody ResponseInfo createArticle(@RequestBody ArticleDto articleDto) {
 

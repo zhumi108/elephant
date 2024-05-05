@@ -19,8 +19,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Optional;
 
-@Tag(name = "用户登录注册接口")
+@Tag(name = "用户管理接口")
 @RestController
+@RequestMapping("/api/v1")
 public class LoginController {
 
 
