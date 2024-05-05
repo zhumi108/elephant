@@ -8,6 +8,9 @@ import com.tt.elephant.model.ResponseInfo;
 import com.tt.elephant.model.TokenModel;
 import com.tt.elephant.repository.UserEntity;
 import com.tt.elephant.repository.UserRepository;
+
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +19,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Optional;
 
+@Tag(name = "用户登录注册接口")
 @RestController
 public class LoginController {
 

@@ -1,0 +1,16 @@
+
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    #operations-sorter: order
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      display-name: '测试'
+      paths-to-match: '/**'
+      packages-to-scan: com.tt.elephant
+  default-flat-param-object: true
+
