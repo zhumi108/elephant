@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Primary;
 @Getter
 public class UserEntity {
 
-
-    private Integer id;
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid",strategy = "org.hibernate.id.UUIDGenerator")
@@ -23,6 +21,8 @@ public class UserEntity {
     private String username;
     private String password;
     private String avatarUrl;
+    private long createTime;
+    private long updateTime;
 
     @Column(columnDefinition = "INT DEFAULT 1")
     private int status;

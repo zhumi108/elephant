@@ -12,7 +12,7 @@ public class GlobalExceptionHandlerAdvice {
     public Object handleRuntimeException(Exception e, HttpServletRequest request, HttpServletResponse response) {
 
         response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return ResponseInfo.fail("failed",e);
+        return ResponseInfo.fail(500,e);
     }
 
 }

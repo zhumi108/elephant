@@ -17,6 +17,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import java.util.Optional;
 
 @Tag(name = "用户管理接口")
@@ -38,14 +42,28 @@ public class LoginController {
     public ResponseInfo signUp(@RequestBody RegisterDto registerDto) {
         UserEntity userEntity = new UserEntity();
         userEntity.setUsername(registerDto.getUsername());
-        userEntity.setPassword(registerDto.getPassword());
+        String originPassword = registerDto.getPassword();
         //1 判断是否已经注册过（从前注册但没有注销过）
         if (userRepository.findByUsername(userEntity.getUsername()) == 0) {
             userEntity.setStatus(1);
+            userEntity.setCreateTime(System.currentTimeMillis());
+            userEntity.setPassword(getMd5Hash(originPassword));
             userRepository.save(userEntity);
-         return   ResponseInfo.success("sign up success");
+            return ResponseInfo.success("signup succeed");
         } else {
-       return ResponseInfo.fail("signup failed");
+            return ResponseInfo.fail(500, "user already exists");
+        }
+    }
+
+    public String getMd5Hash(String text) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] hashBytes = md.digest(text.getBytes("UTF-8"));
+            return Base64.getEncoder().encodeToString(hashBytes);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("MD5 algorithm not found", e);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("unsupported encoding exception");
         }
     }
 
@@ -55,23 +73,18 @@ public class LoginController {
      * @return
      */
     @PostMapping("/signin")
-    public  ResponseInfo login(@RequestBody LoginDto loginDto) {
+    public ResponseInfo login(@RequestBody LoginDto loginDto) {
 
-        UserEntity result = userRepository.findByUsernameAndpassword(loginDto.getUsername(), loginDto.getPassword());
+        UserEntity result = userRepository.findByUsernameAndpassword(loginDto.getUsername(), getMd5Hash(loginDto.getPassword()));
 
-        ResponseInfo responseInfo = new ResponseInfo();
         if (result != null) {
             //jwt save token
             String token = JwtSupport.genereateToken(result.getUserId(), result.getUsername());
-            TokenModel tokenModel = new TokenModel(result.getUserId(),token);
-
-            return ResponseInfo.success("login success",tokenModel);
-
+            TokenModel tokenModel = new TokenModel(result.getUserId(), token);
+            return ResponseInfo.success("login success", tokenModel);
         } else {
-            return ResponseInfo.fail("login failed");
-
+            return ResponseInfo.fail(500, "login failed");
         }
-
     }
 
     /**

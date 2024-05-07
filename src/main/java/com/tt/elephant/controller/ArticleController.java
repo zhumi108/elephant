@@ -34,7 +34,7 @@ public class ArticleController {
         Pageable pageable = PageRequest.of(pageNumber-1,pageSize);
 
         Page<ArticleEntity> articleEntityList = articleResposity.findByAuthorContaining(author,pageable);
-        responseInfo.setCode("true");
+        responseInfo.setCode(200);
         responseInfo.setData(articleEntityList);
         return responseInfo;
     }
@@ -53,9 +53,9 @@ public class ArticleController {
        Optional<ArticleEntity> result = articleResposity.findById(id);
        if (result.isPresent()) {
            responseInfo.setData(result.get());
-           responseInfo.setCode("true");
+           responseInfo.setCode(200);
        }else{
-           responseInfo.setCode("false");
+           responseInfo.setCode(500);
        }
                 return responseInfo;
     }
@@ -73,7 +73,7 @@ public class ArticleController {
         articleEntity.setId(articleDto.getArticleId());
         articleEntity.setStatus(articleDto.getStatus());
         articleResposity.save(articleEntity);
-        responseInfo.setCode("true");
+        responseInfo.setCode(200);
         return responseInfo;
     }
 
@@ -97,7 +97,7 @@ public class ArticleController {
        ArticleEntity articleEntity1= articleResposity.save(articleEntity);
        ResponseInfo responseInfo = new ResponseInfo();
 
-           responseInfo.setCode("true");
+           responseInfo.setCode(200);
 
         return responseInfo;
     }
