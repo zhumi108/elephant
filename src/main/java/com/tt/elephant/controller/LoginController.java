@@ -75,15 +75,18 @@ public class LoginController {
     @PostMapping("/signin")
     public ResponseInfo login(@RequestBody LoginDto loginDto) {
 
+        Integer userExists = userRepository.findByUsername(loginDto.getUsername());
         UserEntity result = userRepository.findByUsernameAndpassword(loginDto.getUsername(), getMd5Hash(loginDto.getPassword()));
 
         if (result != null) {
             //jwt save token
             String token = JwtSupport.genereateToken(result.getUserId(), result.getUsername());
             TokenModel tokenModel = new TokenModel(result.getUserId(), token);
-            return ResponseInfo.success("login success", tokenModel);
-        } else {
-            return ResponseInfo.fail(500, "login failed");
+            return ResponseInfo.success("login succeed", tokenModel);
+        } else if (userExists == 0) {
+            return ResponseInfo.fail(500, "user does not exist");
+        }  else {
+            return ResponseInfo.fail(500, "wrong password");
         }
     }
 
