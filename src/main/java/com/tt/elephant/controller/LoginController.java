@@ -41,10 +41,10 @@ public class LoginController {
     @PostMapping("/signup")
     public ResponseInfo signUp(@RequestBody RegisterDto registerDto) {
         UserEntity userEntity = new UserEntity();
-        userEntity.setUsername(registerDto.getUsername());
+        userEntity.setEmailAddress(registerDto.getEmailAddress());
         String originPassword = registerDto.getPassword();
         //1 判断是否已经注册过（从前注册但没有注销过）
-        if (userRepository.findByUsername(userEntity.getUsername()) == 0) {
+        if (userRepository.findByEmailAddress(userEntity.getEmailAddress()) == 0) {
             userEntity.setStatus(1);
             userEntity.setCreateTime(System.currentTimeMillis());
             userEntity.setPassword(getMd5Hash(originPassword));
@@ -75,15 +75,15 @@ public class LoginController {
     @PostMapping("/signin")
     public ResponseInfo login(@RequestBody LoginDto loginDto) {
 
-        Integer userExists = userRepository.findByUsername(loginDto.getUsername());
-        UserEntity result = userRepository.findByUsernameAndpassword(loginDto.getUsername(), getMd5Hash(loginDto.getPassword()));
+        Integer emailAddressExists = userRepository.findByEmailAddress(loginDto.getEmailAddress());
+        UserEntity result = userRepository.findByEmailAddressPassword(loginDto.getEmailAddress(), getMd5Hash(loginDto.getPassword()));
 
         if (result != null) {
             //jwt save token
-            String token = JwtSupport.genereateToken(result.getUserId(), result.getUsername());
+            String token = JwtSupport.genereateToken(result.getUserId(), result.getEmailAddress());
             TokenModel tokenModel = new TokenModel(result.getUserId(), token);
             return ResponseInfo.success("login succeed", tokenModel);
-        } else if (userExists == 0) {
+        } else if (emailAddressExists == 0) {
             return ResponseInfo.fail(500, "user does not exist");
         }  else {
             return ResponseInfo.fail(500, "wrong password");
@@ -122,14 +122,14 @@ public class LoginController {
     /**
      *  判断当前用户是否已经注册过（排除已经注销过的用户）
      *  0  代表数据库中不存在；1带表存在
-     * @param username
+     * @param emailAddress
      * @return
      */
     @JwtToken
     @GetMapping("/findUser")
-    public @ResponseBody ResponseInfo findUser(@RequestParam(value = "username") String username) {
+    public @ResponseBody ResponseInfo findUser(@RequestParam(value = "emailAddress") String emailAddress) {
         ResponseInfo responseInfo = new ResponseInfo();
-        Integer result = userRepository.findByUsername(username);
+        Integer result = userRepository.findByEmailAddress(emailAddress);
         return ResponseInfo.success(result);
 
     }
@@ -155,9 +155,9 @@ public class LoginController {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) (RequestContextHolder.currentRequestAttributes())).getRequest();
         String token = httpServletRequest.getHeader("token");
 
-        String username =JwtSupport.getUserName(token);
+        String emailAddress =JwtSupport.getEmailAddress(token);
 
-        return ResponseInfo.success(username);
+        return ResponseInfo.success(emailAddress);
     }
 
 }

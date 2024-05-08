@@ -18,7 +18,8 @@ public class UserEntity {
     @GenericGenerator(name = "uuid",strategy = "org.hibernate.id.UUIDGenerator")
     private String userId;
 
-    private String username;
+    private String emailAddress;
+    private String nickname;
     private String password;
     private String avatarUrl;
     private long createTime;

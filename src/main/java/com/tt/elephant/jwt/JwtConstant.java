@@ -17,13 +17,17 @@ public interface JwtConstant {
     String TOKEN = "token";
 
     /**
-     * 登录名
+     * 用户唯一ID
      */
     String CLAIM_KEY_USER_ID="userId";
     /**
-     * 用户名称（真实名称）
+     * 用户邮箱地址
      */
-  String CLAIM_KEY_USER_NAME="userName";
+  String CLAIM_KEY_EMAIL_ADDRESS="emailAddress";
+  /**
+   * 用户昵称
+   */
+  String claim_KEY_NICKNAME="nickname";
     /**
      * 用户类型：staff，client
      */

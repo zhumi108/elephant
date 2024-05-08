@@ -20,7 +20,7 @@ public class JwtSupport {
      * JWT 生成
      * @return
      */
-    public static  String genereateToken(String userId,String userName){
+    public static  String genereateToken(String userId,String emailAddress){
 
         Calendar nowTime=Calendar.getInstance();
         nowTime.add(Calendar.MINUTE, JwtConstant.EXPIRES_MINUTE);
@@ -29,15 +29,15 @@ public class JwtSupport {
         return JWT.create().withIssuedAt(new Date())
                 .withExpiresAt(expires)
                 .withClaim(JwtConstant.CLAIM_KEY_USER_ID,userId)
-                .withClaim(JwtConstant.CLAIM_KEY_USER_NAME, userName)
+                .withClaim(JwtConstant.CLAIM_KEY_EMAIL_ADDRESS, emailAddress)
                 .sign(getAlgorithm());
     }
 
 
     public static String refreshToken(String token){
-        String username = JWT.decode(token).getClaim(JwtConstant.CLAIM_KEY_USER_NAME).asString();
+        String emailAddress = JWT.decode(token).getClaim(JwtConstant.CLAIM_KEY_EMAIL_ADDRESS).asString();
         String userId = JWT.decode(token).getClaim(JwtConstant.CLAIM_KEY_USER_ID).asString();
-      return  genereateToken(userId,username);
+      return  genereateToken(userId,emailAddress);
     }
 
     public static Claim getClaimByToken(String token){
@@ -94,8 +94,8 @@ public class JwtSupport {
     }
 
 
-    public static String getUserName(String token){
-        return getString(token, JwtConstant.CLAIM_KEY_USER_NAME );
+    public static String getEmailAddress(String token){
+        return getString(token, JwtConstant.CLAIM_KEY_EMAIL_ADDRESS );
     }
 
     public static String getUserId(String token){

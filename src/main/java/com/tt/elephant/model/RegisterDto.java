@@ -6,6 +6,6 @@ import lombok.Setter;
 @Setter
 @Getter
 public class RegisterDto {
-    private String username;
+    private String emailAddress;
     private String password;
 }

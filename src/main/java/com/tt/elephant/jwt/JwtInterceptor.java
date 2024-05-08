@@ -66,11 +66,11 @@ public class JwtInterceptor implements HandlerInterceptor {
     private boolean checkUser(String token) {
         //1从token 获取用户  userId, username;
         String userId = JwtSupport.getUserId(token);
-        String userName = JwtSupport.getUserName(token);
+        String emailAddress = JwtSupport.getEmailAddress(token);
         //2   判断当前用户是否为相同，从数据库中获取username,根据当前userid
         UserEntity userEntity = userService.getUser(userId);
         if (userEntity != null) {
-                    if (Objects.equals(userEntity.getUsername(), userName)){
+                    if (Objects.equals(userEntity.getEmailAddress(), emailAddress)){
                         return true;}
         }
         return false;
