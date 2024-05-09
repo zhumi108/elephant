@@ -2,10 +2,7 @@ package com.tt.elephant.controller;
 
 import com.tt.elephant.jwt.JwtSupport;
 import com.tt.elephant.jwt.JwtToken;
-import com.tt.elephant.model.LoginDto;
-import com.tt.elephant.model.RegisterDto;
-import com.tt.elephant.model.ResponseInfo;
-import com.tt.elephant.model.TokenModel;
+import com.tt.elephant.model.*;
 import com.tt.elephant.repository.UserEntity;
 import com.tt.elephant.repository.UserRepository;
 
@@ -82,7 +79,26 @@ public class LoginController {
             //jwt save token
             String token = JwtSupport.genereateToken(result.getUserId(), result.getEmailAddress());
             TokenModel tokenModel = new TokenModel(result.getUserId(), token);
-            return ResponseInfo.success("login succeed", tokenModel);
+            result.setToken(token);
+            UserDto dto = new UserDto();
+            dto.setUserId(result.getUserId());
+            dto.setEmailAddress(result.getEmailAddress());
+            String nickname = result.getNickname();
+            String avartarUrl = result.getAvatarUrl();
+            if (nickname == null) {
+                dto.setNickname("");
+            } else {
+                dto.setNickname(nickname);
+            }
+            if (avartarUrl == null) {
+                dto.setAvatarUrl("");
+            } else {
+                dto.setAvatarUrl(avartarUrl);
+            }
+            dto.setToken(result.getToken());
+            dto.setStatus(result.getStatus());
+            userRepository.save(result);
+            return ResponseInfo.success("login succeed", dto);
         } else if (emailAddressExists == 0) {
             return ResponseInfo.fail(500, "user does not exist");
         }  else {

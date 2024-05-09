@@ -22,6 +22,7 @@ public class UserEntity {
     private String nickname;
     private String password;
     private String avatarUrl;
+    private String token;
     private long createTime;
     private long updateTime;
 
