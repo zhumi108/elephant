@@ -70,8 +70,8 @@ public class ArticleController {
     public @ResponseBody ResponseInfo updateArticle(@RequestBody ArticleDto articleDto) {
         ResponseInfo responseInfo = new ResponseInfo();
         ArticleEntity articleEntity = new ArticleEntity();
-        articleEntity.setId(articleDto.getArticleId());
-        articleEntity.setStatus(articleDto.getStatus());
+//        articleEntity.setArticleId(articleDto.getArticleId());
+//        articleEntity.setStatus(articleDto.getStatus());
         articleResposity.save(articleEntity);
         responseInfo.setCode(200);
         return responseInfo;
@@ -87,18 +87,20 @@ public class ArticleController {
     public @ResponseBody ResponseInfo createArticle(@RequestBody ArticleDto articleDto) {
 
         ArticleEntity articleEntity = new ArticleEntity();
-        articleEntity.setAuthor(articleDto.getAuthor());
+        articleEntity.setAuthor("Jeremy");
         articleEntity.setTitle(articleDto.getTitle());
         articleEntity.setContent(articleDto.getContent());
-        articleEntity.setStatus(articleDto.getStatus());
-        articleEntity.setImgUrl(articleDto.getImgUrl());
+        articleEntity.setType(0);
+        long currentTime = System.currentTimeMillis();
+        articleEntity.setCreateTime(currentTime);
+        articleEntity.setUpdateTime(currentTime);
 
-
-       ArticleEntity articleEntity1= articleResposity.save(articleEntity);
-       ResponseInfo responseInfo = new ResponseInfo();
-
-           responseInfo.setCode(200);
-
+        articleResposity.save(articleEntity);
+        ResponseInfo responseInfo = new ResponseInfo();
+        responseInfo.setCode(200);
+        responseInfo.setMsg("succeed");
+        responseInfo.setFlag(true);
+        responseInfo.setData(articleEntity);
         return responseInfo;
     }
 }
