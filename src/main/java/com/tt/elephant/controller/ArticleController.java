@@ -5,6 +5,7 @@ import com.tt.elephant.model.ArticleDto;
 import com.tt.elephant.model.ResponseInfo;
 import com.tt.elephant.repository.ArticleEntity;
 import com.tt.elephant.repository.ArticleRepository;
+import com.tt.elephant.util.ServiceSupport;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -90,7 +91,7 @@ public class ArticleController {
         articleEntity.setAuthor("Jeremy");
         articleEntity.setTitle(articleDto.getTitle());
         articleEntity.setContent(articleDto.getContent());
-        articleEntity.setType(0);
+        articleEntity.setType(1);
         long currentTime = System.currentTimeMillis();
         articleEntity.setCreateTime(currentTime);
         articleEntity.setUpdateTime(currentTime);

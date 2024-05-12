@@ -1,11 +1,14 @@
 package com.tt.elephant.controller;
 
+import com.tt.elephant.jwt.JwtConstant;
+import com.tt.elephant.jwt.JwtInterceptor;
 import com.tt.elephant.jwt.JwtSupport;
 import com.tt.elephant.jwt.JwtToken;
 import com.tt.elephant.model.*;
 import com.tt.elephant.repository.UserEntity;
 import com.tt.elephant.repository.UserRepository;
 
+import com.tt.elephant.util.ServiceSupport;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -119,19 +122,21 @@ public class LoginController {
     }
     /**
      * 注销用户，将用户的状态改为0
-     * @param userId
+     * @param
      * @return
      */
     @JwtToken
-    @GetMapping("/delete/account")
-    public  ResponseInfo cancelAccount(@RequestParam(value = "userId") String userId) {
-        ResponseInfo responseInfo = new ResponseInfo();
-        Integer result = userRepository.updateStatus(0, userId);
+    @PostMapping("/delete/account")
+    public  ResponseInfo cancelAccount() {
+        String userId = ServiceSupport.getCurrentUserId();
+//        Integer result = userRepository.updateStatus(0, currentToken);
+        userRepository.deleteById(userId);
+        Optional<UserEntity> entity = userRepository.findById(userId);
 
-        if (result != 0) {
-          return ResponseInfo.success(" cancel account success");
+        if (entity.isPresent()) {
+            return ResponseInfo.fail(" delete account failed");
         } else {
-          return ResponseInfo.fail(" cancel account failed");
+            return ResponseInfo.success(" delete account success");
         }
     }
 

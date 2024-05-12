@@ -20,5 +20,9 @@ public class ServiceSupport {
         return request.getHeader(JwtConstant.TOKEN);
     }
 
-
+    public static String getCurrentUserId() {
+        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
+                .getRequest();
+        return request.getHeader(JwtConstant.CLAIM_KEY_USER_ID);
+    }
 }
