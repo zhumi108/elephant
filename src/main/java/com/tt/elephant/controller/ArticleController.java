@@ -24,17 +24,17 @@ public class ArticleController {
 
     /**
      * 获取文章列表
-     * @param author
+     * @param type
      * @return
      */
     @JwtToken
     @GetMapping("/article/list")
-    public @ResponseBody ResponseInfo ArticleList(@RequestParam("author") String author, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize){
+    public @ResponseBody ResponseInfo ArticleList(@RequestParam("type") int type, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize){
         ResponseInfo responseInfo = new ResponseInfo();
 
         Pageable pageable = PageRequest.of(pageNumber-1,pageSize);
 
-        Page<ArticleEntity> articleEntityList = articleResposity.findByAuthorContaining(author,pageable);
+        Page<ArticleEntity> articleEntityList = articleResposity.findByUserContaining(ServiceSupport.getCurrentUserId(),pageable);
         responseInfo.setCode(200);
         responseInfo.setData(articleEntityList);
         return responseInfo;
@@ -92,6 +92,7 @@ public class ArticleController {
         articleEntity.setTitle(articleDto.getTitle());
         articleEntity.setContent(articleDto.getContent());
         articleEntity.setType(1);
+        articleEntity.setUserId(ServiceSupport.getCurrentUserId());
         long currentTime = System.currentTimeMillis();
         articleEntity.setCreateTime(currentTime);
         articleEntity.setUpdateTime(currentTime);

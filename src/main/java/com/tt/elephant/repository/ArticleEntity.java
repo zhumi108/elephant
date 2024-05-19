@@ -21,6 +21,7 @@ public class ArticleEntity {
     private String author;
 //    private String tag;
     private int type;
+    private String userId;
 //    private String status;
     private long createTime;
     private long updateTime;

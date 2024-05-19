@@ -10,7 +10,7 @@ public interface JwtConstant {
   /**
    * 过期时间  单位分钟
    */
-  Integer EXPIRES_MINUTE = 3;
+  Integer EXPIRES_MINUTE = 1440;
   /**
    * key token
    */

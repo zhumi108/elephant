@@ -8,6 +8,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface ArticleRepository extends JpaRepository<ArticleEntity, String> {
 
-    @Query(value = "select * from article where author=:authorName ",nativeQuery = true)
-    Page<ArticleEntity> findByAuthorContaining(@Param("authorName") String author, Pageable pageable);
+    @Query(value = "select * from article where userId=:userId ",nativeQuery = true)
+    Page<ArticleEntity> findByUserContaining(@Param("userId") String userId, Pageable pageable);
 }
