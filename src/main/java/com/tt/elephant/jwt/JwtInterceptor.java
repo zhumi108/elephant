@@ -2,6 +2,7 @@ package com.tt.elephant.jwt;
 
 
 import com.tt.elephant.exception.CustomException;
+import com.tt.elephant.exception.UserInfoExpiredException;
 import com.tt.elephant.repository.UserEntity;
 import com.tt.elephant.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,11 +39,11 @@ public class JwtInterceptor implements HandlerInterceptor {
             if (jwtToken.required()) {
                 // 执行认证
                 if (token == null) {
-                    throw new CustomException("无token，请重新登录");
+                    throw new CustomException("当前用户未登录");
                 }
                 // 验证 token
               if( ! JwtSupport.verifyToken(token)){
-                  throw  new CustomException("token不合法");
+                  throw new CustomException("登录过期, 请重新登录");
               }
               //获取过期时间
             Date date =   JwtSupport.getExpireTime(token);
@@ -50,7 +51,7 @@ public class JwtInterceptor implements HandlerInterceptor {
 
                 //验证用户
               if(!checkUser(token)){
-                  throw  new CustomException("当前用户不存在，非法");
+                  throw  new CustomException("当前用户不存在");
               }
 
             }

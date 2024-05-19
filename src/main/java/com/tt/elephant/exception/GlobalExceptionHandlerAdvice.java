@@ -11,8 +11,12 @@ public class GlobalExceptionHandlerAdvice {
     @ExceptionHandler({RuntimeException.class, Exception.class})
     public Object handleRuntimeException(Exception e, HttpServletRequest request, HttpServletResponse response) {
 
-        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-        return ResponseInfo.fail(500,e);
+        if (e.getMessage() == "登录过期, 请重新登录") {
+            response.setStatus(10011);
+            return ResponseInfo.fail(10011,e);
+        } else {
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return ResponseInfo.fail(500,e);
+        }
     }
-
 }

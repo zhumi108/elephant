@@ -158,15 +158,38 @@ public class LoginController {
     /**
      * 获取用户信息
      *
-     * @param userId
+     * @param
      * @return
      */
     @JwtToken
-    @GetMapping("/getUserInfo")
-    public @ResponseBody ResponseInfo findUserByUserId(@RequestParam(value = "userId") String userId) {
-        ResponseInfo responseInfo = new ResponseInfo();
+    @PostMapping("/getUserInfo")
+    public @ResponseBody ResponseInfo findUserByUserId() {
+        String userId = ServiceSupport.getCurrentUserId();
         Optional<UserEntity> result = userRepository.findById(userId);
-        return result.map(ResponseInfo::success).orElseGet(() -> ResponseInfo.fail("the current user does not exist!"));
+
+        if (result != null) {
+            UserEntity entity = result.get();
+            UserDto dto = new UserDto();
+            dto.setUserId(entity.getUserId());
+            dto.setEmailAddress(entity.getEmailAddress());
+            String nickname = entity.getNickname();
+            String avartarUrl = entity.getAvatarUrl();
+            if (nickname == null) {
+                dto.setNickname("");
+            } else {
+                dto.setNickname(nickname);
+            }
+            if (avartarUrl == null) {
+                dto.setAvatarUrl("");
+            } else {
+                dto.setAvatarUrl(avartarUrl);
+            }
+            dto.setToken(entity.getToken());
+            dto.setStatus(entity.getStatus());
+            return ResponseInfo.success("login succeed", dto);
+        } else {
+            return ResponseInfo.fail(500, "user does not exist");
+        }
     }
 
 
