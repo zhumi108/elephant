@@ -2,6 +2,7 @@ package com.tt.elephant.controller;
 
 import com.tt.elephant.jwt.JwtToken;
 import com.tt.elephant.model.ArticleDto;
+import com.tt.elephant.model.ArticleResponseInfo;
 import com.tt.elephant.model.ResponseInfo;
 import com.tt.elephant.repository.ArticleEntity;
 import com.tt.elephant.repository.ArticleRepository;
@@ -29,14 +30,19 @@ public class ArticleController {
      */
     @JwtToken
     @GetMapping("/article/list")
-    public @ResponseBody ResponseInfo ArticleList(@RequestParam("type") int type, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize){
-        ResponseInfo responseInfo = new ResponseInfo();
+    public @ResponseBody ArticleResponseInfo ArticleList(@RequestParam("type") int type, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize){
 
         Pageable pageable = PageRequest.of(pageNumber-1,pageSize);
+        ArticleResponseInfo responseInfo = new ArticleResponseInfo();
+        Page<ArticleEntity> articleEntityList = articleResposity.findByUserContaining(ServiceSupport.getCurrentUserId(), type, pageable);
 
-        Page<ArticleEntity> articleEntityList = articleResposity.findByUserContaining(ServiceSupport.getCurrentUserId(),pageable);
         responseInfo.setCode(200);
-        responseInfo.setData(articleEntityList);
+        responseInfo.setMsg("success");
+        responseInfo.setFlag(true);
+        responseInfo.setTotalPageCount(articleEntityList.getTotalPages());
+        responseInfo.setTotalCount((int) articleEntityList.getTotalElements());
+        responseInfo.setHasMore(articleEntityList.hasNext());
+        responseInfo.setData(articleEntityList.stream().toList());
         return responseInfo;
     }
 
