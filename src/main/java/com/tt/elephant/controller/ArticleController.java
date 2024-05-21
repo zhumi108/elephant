@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @Tag(name = "文章管理接口", description = "文章管理")
@@ -69,18 +70,30 @@ public class ArticleController {
 
     /**
      * 修改文章类型：public ，private
-     * @param articleDto
+     * @param articleInfo
      * @return
      */
     @JwtToken
     @PostMapping("/article/changeType")
-    public @ResponseBody ResponseInfo updateArticle(@RequestBody ArticleDto articleDto) {
+    public @ResponseBody ResponseInfo updateArticle(@RequestBody Map articleInfo) {
         ResponseInfo responseInfo = new ResponseInfo();
-        ArticleEntity articleEntity = new ArticleEntity();
-//        articleEntity.setArticleId(articleDto.getArticleId());
-//        articleEntity.setStatus(articleDto.getStatus());
-        articleResposity.save(articleEntity);
-        responseInfo.setCode(200);
+        String articleId = (String) articleInfo.get("articleId");
+        ArticleEntity articleEntity = articleResposity.findByArticleId(articleId);
+        if (articleEntity == null) {
+            responseInfo.setCode(500);
+            responseInfo.setMsg("no article found");
+        } else {
+            int previousType = articleEntity.getType();
+            if (previousType == 0) {
+                articleEntity.setType(1);
+            } else {
+                articleEntity.setType(0);
+            }
+            responseInfo.setCode(200);
+            responseInfo.setMsg("success");
+            responseInfo.setData(articleEntity);
+            articleResposity.save(articleEntity);
+        }
         return responseInfo;
     }
 
