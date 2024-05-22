@@ -21,6 +21,7 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.util.Map;
 import java.util.Optional;
 
 @Tag(name = "用户管理接口")
@@ -106,6 +107,28 @@ public class LoginController {
             return ResponseInfo.fail(500, "user does not exist");
         }  else {
             return ResponseInfo.fail(500, "wrong password");
+        }
+    }
+
+    /**
+    更新昵称和头像
+    */
+    @JwtToken
+    @PostMapping("/fillUserInfo")
+    public ResponseInfo fillUserInfo(@RequestBody Map userInfo) {
+        String userId = ServiceSupport.getCurrentUserId();
+        Optional<UserEntity> result = userRepository.findById(userId);
+        String nickname = (String) userInfo.get("nickname");
+        String avartarUrl = (String) userInfo.get("avartarUrl");
+
+        if (result != null) {
+            UserEntity entity = result.get();
+            entity.setNickname(nickname);
+            entity.setAvatarUrl(avartarUrl);
+            userRepository.save(entity);
+            return ResponseInfo.success("user info updated");
+        } else {
+            return ResponseInfo.fail(500, "user does not exist");
         }
     }
 
