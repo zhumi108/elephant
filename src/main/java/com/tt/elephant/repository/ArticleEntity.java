@@ -19,6 +19,7 @@ public class ArticleEntity {
     private String title;
     private String content;
     private String author;
+    private String avartarUrl;
 //    private String tag;
     private int type;
     private String userId;

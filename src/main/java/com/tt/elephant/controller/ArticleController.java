@@ -6,6 +6,8 @@ import com.tt.elephant.model.ArticleResponseInfo;
 import com.tt.elephant.model.ResponseInfo;
 import com.tt.elephant.repository.ArticleEntity;
 import com.tt.elephant.repository.ArticleRepository;
+import com.tt.elephant.repository.UserEntity;
+import com.tt.elephant.repository.UserRepository;
 import com.tt.elephant.util.ServiceSupport;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,18 +26,24 @@ public class ArticleController {
     @Autowired
     ArticleRepository articleResposity;
 
+    @Autowired
+    UserRepository userRepository;
+
     /**
      * 获取文章列表
-     * @param type
+     * @param body
      * @return
      */
     @JwtToken
-    @GetMapping("/article/list")
-    public @ResponseBody ArticleResponseInfo ArticleList(@RequestParam("type") int type, @RequestParam("pageNumber") int pageNumber, @RequestParam("pageSize") int pageSize){
-
-        Pageable pageable = PageRequest.of(pageNumber-1,pageSize);
+    @PostMapping("/article/list")
+    public @ResponseBody ArticleResponseInfo ArticleList(@RequestBody Map body){
+        int type = (int) body.get("type");
+        int pageNumber = (int) body.get("pageNumber");
+        int pageSize = (int) body.get("pageSize");
+        String userId = ServiceSupport.getCurrentUserId();
+        Pageable pageable = PageRequest.of(pageNumber,pageSize);
         ArticleResponseInfo responseInfo = new ArticleResponseInfo();
-        Page<ArticleEntity> articleEntityList = articleResposity.findByUserContaining(ServiceSupport.getCurrentUserId(), type, pageable);
+        Page<ArticleEntity> articleEntityList = articleResposity.findByUserContaining(userId, type, pageable);
 
         responseInfo.setCode(200);
         responseInfo.setMsg("success");
@@ -106,12 +114,18 @@ public class ArticleController {
     @PostMapping("/new/article")
     public @ResponseBody ResponseInfo createArticle(@RequestBody ArticleDto articleDto) {
 
+        String userId = ServiceSupport.getCurrentUserId();
+        Optional<UserEntity> result = userRepository.findById(userId);
         ArticleEntity articleEntity = new ArticleEntity();
-        articleEntity.setAuthor("Jeremy");
         articleEntity.setTitle(articleDto.getTitle());
         articleEntity.setContent(articleDto.getContent());
         articleEntity.setType(1);
         articleEntity.setUserId(ServiceSupport.getCurrentUserId());
+        if (result != null) {
+            UserEntity entity = result.get();
+            articleEntity.setAuthor(entity.getNickname());
+            articleEntity.setAvartarUrl(entity.getAvatarUrl());
+        }
         long currentTime = System.currentTimeMillis();
         articleEntity.setCreateTime(currentTime);
         articleEntity.setUpdateTime(currentTime);
