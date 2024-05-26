@@ -43,15 +43,23 @@ public class ArticleController {
         String userId = ServiceSupport.getCurrentUserId();
         Pageable pageable = PageRequest.of(pageNumber,pageSize);
         ArticleResponseInfo responseInfo = new ArticleResponseInfo();
-        Page<ArticleEntity> articleEntityList = articleResposity.findByUserContaining(userId, type, pageable);
+        Page<ArticleEntity> currentEntityList;
+
+        if (type == 0) {
+            // all user's articles
+            currentEntityList = articleResposity.findByAllUsers(pageable);
+        } else {
+            // current user's articles
+            currentEntityList = articleResposity.findByUserContaining(userId, pageable);
+        }
 
         responseInfo.setCode(200);
         responseInfo.setMsg("success");
         responseInfo.setFlag(true);
-        responseInfo.setTotalPageCount(articleEntityList.getTotalPages());
-        responseInfo.setTotalCount((int) articleEntityList.getTotalElements());
-        responseInfo.setHasMore(articleEntityList.hasNext());
-        responseInfo.setData(articleEntityList.stream().toList());
+        responseInfo.setTotalPageCount(currentEntityList.getTotalPages());
+        responseInfo.setTotalCount((int) currentEntityList.getTotalElements());
+        responseInfo.setHasMore(currentEntityList.hasNext());
+        responseInfo.setData(currentEntityList.stream().toList());
         return responseInfo;
     }
 
