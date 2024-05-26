@@ -143,6 +143,30 @@ public class LoginController {
         ResponseInfo responseInfo = new ResponseInfo();
         return responseInfo;
     }
+
+    @JwtToken
+    @PostMapping("/changePassword")
+    public ResponseInfo changePassword(@RequestBody Map params) {
+        String userId = ServiceSupport.getCurrentUserId();
+        Optional<UserEntity> result = userRepository.findById(userId);
+        String originPassword = (String) params.get("originPassword");
+        String newPassword = (String) params.get("newPassword");
+
+        if (result != null) {
+            UserEntity entity = result.get();
+            String savedPassword = entity.getPassword();
+            if (getMd5Hash(originPassword).equals(savedPassword) == false) {
+                return ResponseInfo.fail(500, "wrong original password");
+            } else {
+                entity.setPassword(getMd5Hash(newPassword));
+                userRepository.save(entity);
+                return ResponseInfo.success("password updated");
+            }
+        } else {
+            return ResponseInfo.fail(500, "user does not exist");
+        }
+    }
+
     /**
      * 注销用户，将用户的状态改为0
      * @param
@@ -150,7 +174,7 @@ public class LoginController {
      */
     @JwtToken
     @PostMapping("/delete/account")
-    public  ResponseInfo cancelAccount() {
+    public  ResponseInfo deleteAccount() {
         String userId = ServiceSupport.getCurrentUserId();
 //        Integer result = userRepository.updateStatus(0, currentToken);
         userRepository.deleteById(userId);
@@ -186,7 +210,7 @@ public class LoginController {
      */
     @JwtToken
     @PostMapping("/getUserInfo")
-    public @ResponseBody ResponseInfo findUserByUserId() {
+    public @ResponseBody ResponseInfo getUserInfo() {
         String userId = ServiceSupport.getCurrentUserId();
         Optional<UserEntity> result = userRepository.findById(userId);
 
