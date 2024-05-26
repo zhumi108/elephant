@@ -8,6 +8,7 @@ import com.tt.elephant.model.*;
 import com.tt.elephant.repository.UserEntity;
 import com.tt.elephant.repository.UserRepository;
 
+import com.tt.elephant.service.MailService;
 import com.tt.elephant.util.ServiceSupport;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
@@ -32,6 +33,9 @@ public class LoginController {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private MailService mailService;
 
 
     /**
@@ -129,6 +133,19 @@ public class LoginController {
             return ResponseInfo.success("user info updated");
         } else {
             return ResponseInfo.fail(500, "user does not exist");
+        }
+    }
+
+    @PostMapping("/sendEmailCaptcha")
+    public ResponseInfo sendEmailCaptcha(@RequestBody Map userInfo) {
+        String emailAddress = (String) userInfo.get("emailAddress");
+        Integer result = userRepository.findByEmailAddress(emailAddress);
+
+        if (result == 0) {
+            mailService.sendMail(emailAddress);
+            return ResponseInfo.success("email send succeed");
+        } else {
+            return ResponseInfo.fail(500, "user already exist");
         }
     }
 
