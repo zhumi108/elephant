@@ -146,6 +146,23 @@ public class ArticleController {
         responseInfo.setData(articleEntity);
         return responseInfo;
     }
+
+    @JwtToken
+    @PostMapping("/delete/article")
+    public @ResponseBody ResponseInfo deleteArticle(@RequestBody Map articleInfo) {
+        ResponseInfo responseInfo = new ResponseInfo();
+        String articleId = (String) articleInfo.get("articleId");
+        ArticleEntity articleEntity = articleResposity.findByArticleId(articleId);
+        if (articleEntity == null) {
+            responseInfo.setCode(500);
+            responseInfo.setMsg("no article found");
+        } else {
+            articleResposity.deleteById(articleId);
+            responseInfo.setCode(200);
+            responseInfo.setMsg("article deleted");
+        }
+        return responseInfo;
+    }
 }
 
 
