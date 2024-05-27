@@ -37,7 +37,6 @@ public class LoginController {
     @Autowired
     private MailService mailService;
 
-
     /**
      * 用户注册
      * @param registerDto
@@ -142,8 +141,12 @@ public class LoginController {
         Integer result = userRepository.findByEmailAddress(emailAddress);
 
         if (result == 0) {
+            ResponseInfo responseInfo = new ResponseInfo();
             mailService.sendMail(emailAddress);
-            return ResponseInfo.success("email send succeed");
+            responseInfo.setData(String.valueOf(mailService.captchaCode));
+            responseInfo.setCode(200);
+            responseInfo.setMsg("email send succeed");
+            return responseInfo;
         } else {
             return ResponseInfo.fail(500, "user already exist");
         }
