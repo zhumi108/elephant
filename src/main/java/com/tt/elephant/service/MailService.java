@@ -28,7 +28,7 @@ public class MailService {
             //邮件收信人
             message.setTo(mailAddress);
             //邮件主题
-            message.setSubject("新用户注册");
+            message.setSubject("验证码通知");
             //邮件内容
             // 生成随机 6位验证码
             int idenCode = (int) ((Math.random() * 9 + 1) * 100000);

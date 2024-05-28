@@ -48,7 +48,7 @@ public class LoginController {
         userEntity.setEmailAddress(registerDto.getEmailAddress());
         String originPassword = registerDto.getPassword();
         //1 判断是否已经注册过（从前注册但没有注销过）
-        if (userRepository.findByEmailAddress(userEntity.getEmailAddress()) == 0) {
+        if (userRepository.emailAddressExists(userEntity.getEmailAddress()) == 0) {
             userEntity.setStatus(1);
             userEntity.setCreateTime(System.currentTimeMillis());
             userEntity.setPassword(getMd5Hash(originPassword));
@@ -79,7 +79,7 @@ public class LoginController {
     @PostMapping("/signin")
     public ResponseInfo login(@RequestBody LoginDto loginDto) {
 
-        Integer emailAddressExists = userRepository.findByEmailAddress(loginDto.getEmailAddress());
+        Integer emailAddressExists = userRepository.emailAddressExists(loginDto.getEmailAddress());
         UserEntity result = userRepository.findByEmailAddressPassword(loginDto.getEmailAddress(), getMd5Hash(loginDto.getPassword()));
 
         if (result != null) {
@@ -135,21 +135,31 @@ public class LoginController {
         }
     }
 
+    @PostMapping("/resetPassword")
+    public ResponseInfo resetPassword(@RequestBody Map userInfo) {
+        String emailAddress = (String) userInfo.get("emailAddress");
+        int result = userRepository.emailAddressExists(emailAddress);
+        String newPassword = (String) userInfo.get("newPassword");
+
+        if (result == 1) {
+            UserEntity entity = userRepository.findByEmailAddress(emailAddress);
+            entity.setPassword(getMd5Hash(newPassword));
+            userRepository.save(entity);
+            return ResponseInfo.success("password update succeed");
+        } else {
+            return ResponseInfo.fail(500, "user does not exist");
+        }
+    }
+
     @PostMapping("/sendEmailCaptcha")
     public ResponseInfo sendEmailCaptcha(@RequestBody Map userInfo) {
         String emailAddress = (String) userInfo.get("emailAddress");
-        Integer result = userRepository.findByEmailAddress(emailAddress);
-
-        if (result == 0) {
-            ResponseInfo responseInfo = new ResponseInfo();
-            mailService.sendMail(emailAddress);
-            responseInfo.setData(String.valueOf(mailService.captchaCode));
-            responseInfo.setCode(200);
-            responseInfo.setMsg("email send succeed");
-            return responseInfo;
-        } else {
-            return ResponseInfo.fail(500, "user already exist");
-        }
+        ResponseInfo responseInfo = new ResponseInfo();
+        mailService.sendMail(emailAddress);
+        responseInfo.setData(String.valueOf(mailService.captchaCode));
+        responseInfo.setCode(200);
+        responseInfo.setMsg("email send succeed");
+        return responseInfo;
     }
 
     /**
@@ -217,7 +227,7 @@ public class LoginController {
     @GetMapping("/findUser")
     public @ResponseBody ResponseInfo findUser(@RequestParam(value = "emailAddress") String emailAddress) {
         ResponseInfo responseInfo = new ResponseInfo();
-        Integer result = userRepository.findByEmailAddress(emailAddress);
+        Integer result = userRepository.emailAddressExists(emailAddress);
         return ResponseInfo.success(result);
 
     }
