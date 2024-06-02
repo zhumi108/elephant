@@ -23,10 +23,10 @@ import java.util.Optional;
 @RequestMapping("/api/v1")
 @RestController
 public class ArticleController {
-    @Autowired
+    @Autowired(required = false)
     ArticleRepository articleResposity;
 
-    @Autowired
+    @Autowired(required = false)
     UserRepository userRepository;
 
     /**

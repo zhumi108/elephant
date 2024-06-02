@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserService {
-    @Autowired
+    @Autowired(required = false)
     private UserRepository userRepository;
     public UserEntity getUser(String userId) {
         return userRepository.findById(userId).orElse(null);

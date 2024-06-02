@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -31,10 +32,11 @@ import java.util.Optional;
 public class LoginController {
 
 
-    @Autowired
+    @Autowired(required = false)
+//    @Qualifier("userRepository")
     private UserRepository userRepository;
 
-    @Autowired
+    @Autowired(required = false)
     private MailService mailService;
 
     /**
