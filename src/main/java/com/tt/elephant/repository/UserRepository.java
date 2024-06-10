@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
     UserEntity findByEmailAddress(String emailAddress);
 
     @Query(value="select count(user_id) from user where nickname=?1 and status=1",nativeQuery = true)
-    Integer findByNickname(String nickname);
+    Integer nicknameExists(String nickname);
 
     @Query(value="select count(user_id) from user where email_address=?1 and status=1",nativeQuery = true)
     Integer emailAddressExists(String emailAddress);

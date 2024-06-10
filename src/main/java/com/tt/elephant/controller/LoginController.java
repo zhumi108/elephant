@@ -125,8 +125,11 @@ public class LoginController {
         Optional<UserEntity> result = userRepository.findById(userId);
         String nickname = (String) userInfo.get("nickname");
         String avartarUrl = (String) userInfo.get("avartarUrl");
+        Integer nicknameExists = userRepository.nicknameExists(nickname);
 
-        if (result != null) {
+        if (nicknameExists == 1) {
+            return ResponseInfo.fail(500, "name has been taken");
+        } else if (result != null) {
             UserEntity entity = result.get();
             entity.setNickname(nickname);
             entity.setAvatarUrl(avartarUrl);
