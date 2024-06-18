@@ -33,7 +33,6 @@ public class LoginController {
 
 
     @Autowired(required = false)
-//    @Qualifier("userRepository")
     private UserRepository userRepository;
 
     @Autowired(required = false)
@@ -133,6 +132,29 @@ public class LoginController {
             UserEntity entity = result.get();
             entity.setNickname(nickname);
             entity.setAvatarUrl(avartarUrl);
+            userRepository.save(entity);
+            return ResponseInfo.success("user info updated");
+        } else {
+            return ResponseInfo.fail(500, "user does not exist");
+        }
+    }
+
+    /**
+     更新昵称
+     */
+    @JwtToken
+    @PostMapping("/editNickname")
+    public ResponseInfo editNickname(@RequestBody Map userInfo) {
+        String userId = ServiceSupport.getCurrentUserId();
+        Optional<UserEntity> result = userRepository.findById(userId);
+        String nickname = (String) userInfo.get("nickname");
+        Integer nicknameExists = userRepository.nicknameExists(nickname);
+
+        if (nicknameExists == 1) {
+            return ResponseInfo.fail(500, "name has been taken");
+        } else if (result != null) {
+            UserEntity entity = result.get();
+            entity.setNickname(nickname);
             userRepository.save(entity);
             return ResponseInfo.success("user info updated");
         } else {
