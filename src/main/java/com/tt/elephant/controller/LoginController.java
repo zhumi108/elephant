@@ -39,6 +39,22 @@ public class LoginController {
     private MailService mailService;
 
     /**
+     * 用户注册校验
+     * @param userInfo
+     * @return
+     */
+    @PostMapping("/signup/check")
+    public ResponseInfo signUpCheck(@RequestBody Map userInfo) {
+        String emailAddress = (String) userInfo.get("emailAddress");
+        //1 判断是否已经注册过（从前注册但没有注销过）
+        if (userRepository.emailAddressExists(emailAddress) == 0) {
+            return sendEmailCaptcha(userInfo);
+        } else {
+            return ResponseInfo.fail(500, "user already exists");
+        }
+    }
+
+    /**
      * 用户注册
      * @param registerDto
      * @return
