@@ -25,6 +25,7 @@ public class UserEntity {
     private String token;
     private long createTime;
     private long updateTime;
+    private String blockedUsers;
 
     // 用户状态 0: 已注销 1: 正常   该字段尚未启用
     @Column(columnDefinition = "INT DEFAULT 1")

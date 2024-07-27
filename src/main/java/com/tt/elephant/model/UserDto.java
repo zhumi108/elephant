@@ -12,6 +12,6 @@ public class UserDto {
     private String avatarUrl;
     private String token;
     private int status;
-
+    private String blockedUsers;
 
 }

@@ -32,10 +32,30 @@ public class MailService {
             //邮件内容
             // 生成随机 6位验证码
             int idenCode = (int) ((Math.random() * 9 + 1) * 100000);
-            message.setText("【engo】您的校验码是 " + idenCode + ", 请妥善保管。如非本人操作, 请忽略!");
+            message.setText("【MyZengo】您的校验码是 " + idenCode + ", 请妥善保管。如非本人操作, 请忽略!");
             //发送邮件
             mailSender.send(message);
             captchaCode = idenCode;
+        } catch (Exception e) {
+            throw new MailSendException("邮件发送失败:" + e.getMessage());
+        }
+    }
+
+    public void sendReportMail(String mailAddress, String articleId) throws MailSendException {
+        try {
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            //邮件发信人
+            message.setFrom(from);
+            //邮件收信人
+            message.setTo(mailAddress);
+            //邮件主题
+            message.setSubject("User Report Notification");
+            //邮件内容
+            // 生成随机 6位验证码
+            message.setText("【MyZengo】You have received a new user report for article " + articleId + ", please review it soon!");
+            //发送邮件
+            mailSender.send(message);
         } catch (Exception e) {
             throw new MailSendException("邮件发送失败:" + e.getMessage());
         }

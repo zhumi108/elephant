@@ -121,6 +121,7 @@ public class LoginController {
             }
             dto.setToken(result.getToken());
             dto.setStatus(result.getStatus());
+            dto.setBlockedUsers(result.getBlockedUsers());
             userRepository.save(result);
             return ResponseInfo.success("login succeed", dto);
         } else if (emailAddressExists == 0) {
@@ -176,6 +177,43 @@ public class LoginController {
         } else {
             return ResponseInfo.fail(500, "user does not exist");
         }
+    }
+
+    @JwtToken
+    @PostMapping("/block/user")
+    public ResponseInfo blockUser(@RequestBody Map userInfo) {
+        String userId = ServiceSupport.getCurrentUserId();
+        Optional<UserEntity> result = userRepository.findById(userId);
+        UserEntity entity = result.get();
+        String blockedUsers = entity.getBlockedUsers();
+        String blockID = (String) userInfo.get("userId");
+        if (blockID == null) {
+            return ResponseInfo.fail(500, "parameter error");
+        }
+
+        if (blockedUsers == null || blockedUsers.isBlank()) {
+            blockedUsers = blockID;
+        } else {
+            blockedUsers = blockedUsers + ',' + blockID;
+        }
+        entity.setBlockedUsers(blockedUsers);
+        userRepository.save(entity);
+        return ResponseInfo.success("You will never see this user again");
+    }
+
+    @JwtToken
+    @PostMapping("/report/inappropriate")
+    public ResponseInfo reportInappropriate(@RequestBody Map userInfo) {
+        String reportedUserId = (String) userInfo.get("userId");
+        String articleId = (String) userInfo.get("articleId");
+        String userId = ServiceSupport.getCurrentUserId();
+        Optional<UserEntity> currenUser = userRepository.findById(userId);
+        UserEntity currentEntity = currenUser.get();
+        ResponseInfo responseInfo = new ResponseInfo();
+        mailService.sendReportMail(currentEntity.getEmailAddress(), articleId);
+        responseInfo.setCode(200);
+        responseInfo.setMsg("Thanks for your report, we will review it within 24 hours.");
+        return responseInfo;
     }
 
     @PostMapping("/resetPassword")
@@ -306,6 +344,7 @@ public class LoginController {
             }
             dto.setToken(entity.getToken());
             dto.setStatus(entity.getStatus());
+            dto.setBlockedUsers(entity.getBlockedUsers());
             return ResponseInfo.success("login succeed", dto);
         } else {
             return ResponseInfo.fail(500, "user does not exist");
