@@ -34,7 +34,6 @@ public class ArticleController {
      * @param body
      * @return
      */
-    @JwtToken
     @PostMapping("/article/list")
     public @ResponseBody ArticleResponseInfo ArticleList(@RequestBody Map body){
         int type = (int) body.get("type");
@@ -69,19 +68,17 @@ public class ArticleController {
      * @param id
      * @return
      */
-    @JwtToken
     @GetMapping("/article/detail")
-    public @ResponseBody ResponseInfo ArticleDetail(@RequestParam("articleId")String id) {
-
+    public @ResponseBody ResponseInfo ArticleDetail(@RequestParam("articleId") String id) {
         ResponseInfo responseInfo = new ResponseInfo();
-       Optional<ArticleEntity> result = articleResposity.findById(id);
-       if (result.isPresent()) {
-           responseInfo.setData(result.get());
-           responseInfo.setCode(200);
-       }else{
-           responseInfo.setCode(500);
-       }
-                return responseInfo;
+        Optional<ArticleEntity> result = articleResposity.findById(id);
+        if (result.isPresent()) {
+            responseInfo.setData(result.get());
+            responseInfo.setCode(200);
+        } else {
+            responseInfo.setCode(500);
+        }
+        return responseInfo;
     }
 
     /**
